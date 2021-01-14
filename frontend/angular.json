@@ -124,5 +124,8 @@
       }
     }
   },
-  "defaultProject": "oshea-dev"
+  "defaultProject": "oshea-dev",
+  "cli": {
+    "analytics": false
+  }
 }
