@@ -22,7 +22,7 @@ let content = [{id:1, title:'Foobar', body:'Fishpope'}];
 
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(express.static("frontend"));
@@ -31,17 +31,39 @@ app.get('/', (req, res) => {
   res.send('Hello world, from express');
 });
 
-app.get('/content', (req, res) => {
-  res.json(content);
+app.get('/content', async (req, res) => {
+  const posts = await contentModel.find({});
+  try {
+    res.send(posts);
+    console.log("Sent");
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
-app.post('/content', (req, res) => {
-      const post = req.body;
-      console.log(post);
-      content.push(post);
+app.post('/content', async (req, res) => {
+  console.log(req.body);
+  const post = new contentModel(req.body);
 
-      res.send('Book is added to the database');
+  try {
+    await post.save();
+    res.send(post);
+    console.log("Created");
+  } catch (err) {
+    res.status(500).send(err);
+  }
 
+});
+
+app.delete('/content/:id', async (req, res) => {
+  try {
+    const post = await contentModel.findByIdAndDelete(req.params.id);
+
+    if (!post) rest.status(404).send("No item found");
+    res.status(200).send();
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 app.listen(port, () => console.log('Foobar'));
